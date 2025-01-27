@@ -1,0 +1,5 @@
+@mixin mqm($from) {
+    @media (min-width: $from + 0px) {
+        @content;
+    }
+}
