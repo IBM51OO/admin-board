@@ -46,6 +46,11 @@
                 <Field name="description" placeholder="Описание" v-model="courseData.description"/>
                 <ErrorMessage name="description"/>
             </div>
+            <div class="new-course__content-description">
+                <span>Предварительный контент курса</span>
+                <Field name="contentDescription" placeholder="Предварительный контент курса" v-model="courseData.contentDescription"/>
+                <ErrorMessage name="contentDescription"/>
+            </div>
             <div class="new-course__content" v-for="(page, index) in pages" :key="index">
                 <h3 v-if="pages > 1">Страница {{index + 1}}</h3>
                 <div class="new-course__content-title" v-if="coursesContent[index]?.title">
@@ -77,6 +82,7 @@ const secondBase = 'http://91.227.40.254:8880';
 const groupName = ref();
 const schema =  yup.object({
     name: yup.string().required('Name is a required field'),
+    contentDescription: yup.string().required('Content Description is a required field'),
     groups: yup.string().required('Required field'),
     price: yup.string().required('Price is a required field'),
     priceSecond: yup.string().required('Price is a required field'),
@@ -85,6 +91,7 @@ const schema =  yup.object({
 const courseData = reactive({
     name: '',
     groups: '',
+    contentDescription: '',
     price: '',
     priceSecond: '',
     description: '',
@@ -108,6 +115,7 @@ async function editCourse(id) {
     courseData.images = data.images;
     courseData.price = data.prices[0]?.amount;
     courseData.priceSecond = data.prices[1]?.amount;
+    courseData.contentDescription = data.content;
     coursesContent.value.pop();
     editedCourse.value.pages.forEach((el, index) => {
         coursesContent.value.push({

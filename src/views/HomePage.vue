@@ -59,11 +59,14 @@
                                 <option :value="item.id" v-for="item in groups" :key="item.id">{{item.name}}</option>
                                 <option value="newGroup">Создать группу</option>
                             </Field>
+                            <div class="new-course__delete-group"  v-if="courseData.groups && courseData.groups !== 'newGroup'" @click="deleteGroup">
+                                Удалить группу
+                            </div>
                             <ErrorMessage name="groups"/>
                             <Field name="groupField" v-if="courseData.groups === 'newGroup'" placeholder="Название группы" v-model="groupName" />
                             <div @click="createNewGroup"><img src="../img/check.png" alt="" v-if="groupName"></div>
                         </div>
-                        <div class="new-course__group-image" v-if="selectGroupValue">
+                        <div class="new-course__group-image" v-if="courseData.groups">
                             <span>Обновить фото группы</span>
                             <input type="file" id="avatar" name="avatar" accept="image/png, image/jpeg" @change="uploadGroupImage"  />
                         </div>
@@ -86,6 +89,11 @@
                         <span>Описание</span>
                         <Field name="description" placeholder="Описание" v-model="courseData.description"/>
                         <ErrorMessage name="description"/>
+                    </div>
+                    <div class="new-course__content-description">
+                        <span>Предварительный контент курса</span>
+                        <Field name="content" placeholder="Предварительный контент курса" v-model="courseData.content"/>
+                        <ErrorMessage name="content"/>
                     </div>
                     <div class="new-course__content" v-for="(page, index) in pages" :key="index">
                         <h3 v-if="pages > 1">Страница {{index + 1}}</h3>
@@ -133,11 +141,26 @@ const coursesContent = ref([
 ]);
 const groupName = ref();
 const groups = ref(null);
+const deleteGroup = async () => {
+    try {
+        await axios.delete(`${base}/fitsphere/groups/${courseData.groups}`)
+        notify({
+            type: 'success',
+            title: "Группа удалена",
+        });
+        groups.value = groups.value.filter((el) => el.id !== courseData.groups);
+        selectGroupValue.value = '';
+        courseData.groups = '';
+    } catch (e) {
+        console.log(e);
+    }
+}
 const selectGroupValue = ref('');
 const base = 'http://91.227.40.254:8888';
 const secondBase = 'http://91.227.40.254:8880';
 const schema =  yup.object({
     name: yup.string().required('Name is a required field'),
+    content: yup.string().required('Name is a required field'),
     groups: yup.string().required('Required field'),
     price: yup.string().required('Price is a required field'),
     priceSecond: yup.string().required('Price is a required field'),
@@ -146,6 +169,7 @@ const schema =  yup.object({
 const courseData = reactive({
     name: '',
     groups: '',
+    content: '',
     price: '',
     priceSecond: '',
     description: '',
@@ -184,6 +208,7 @@ async function createNewGroup() {
         groupName.value = null;
         showNewGroupField.value = false;
         selectGroupValue.value = data.id;
+        await fetchGroups();
         notify({
             type: 'success',
             title: "Новая группа создана",
@@ -233,6 +258,7 @@ async function editCourse(id) {
     courseData.name = data.name;
     courseData.groups = data.group;
     courseData.images = data.images;
+    courseData.content = data.content;
     courseData.price = data.prices[0]?.amount;
     courseData.priceSecond = data.prices[1]?.amount;
     coursesContent.value = [];
@@ -276,10 +302,12 @@ async function onSubmit(data) {
         const apiUrl = editCourseId.value ? `${base}/fitsphere/products/${editCourseId.value}` : `${base}/fitsphere/products`;
         await axios.post(apiUrl, {
             name: data.name,
+            content: data.content,
             description: data.description,
             period: 0,
             images: courseData.images,
             group: data.groups,
+            table_of_contents: 'Test',
             pages: coursesContent.value.map((el, index) => {
                 return {
                     title: el.title ? el.title : 'None',
@@ -324,6 +352,7 @@ function openCreatePopup() {
     courseData.name = '';
     courseData.description = '';
     courseData.priceSecond = '';
+    courseData.contentDescription = '';
 
     fetchGroups();
 }
@@ -336,6 +365,7 @@ async function fetchCourses() {
    }
 }
 function onChangeGroup(value) {
+    selectGroupValue.value = value.target.value;
     showNewGroupField.value = value.target.value === 'newGroup';
 }
 </script>
@@ -452,6 +482,16 @@ function onChangeGroup(value) {
     .new-course {
         max-width: 1000px;
         margin: 0 auto;
+        &__content-description {
+            margin-top: 20px;
+            input {
+                margin-left: 10px;
+            }
+        }
+        &__delete-group {
+            cursor: pointer;
+            margin-left: 10px;
+        }
         &__header {
             display: flex;
             justify-content: space-between;
