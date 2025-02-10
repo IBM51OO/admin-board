@@ -287,7 +287,7 @@ async function editCourse(id) {
         })
         nextTick(() => {
             console.log(textContent.value[index])
-            textContent.value[index].setText(el.text);
+            textContent.value[index].setHTML(el.text);
         })
     })
     pages.value = editedCourse.value.pages.length;
@@ -371,6 +371,7 @@ function openCreatePopup() {
     courseData.groups = '';
     courseData.name = '';
     courseData.description = '';
+    courseData.content = '';
     courseData.priceSecond = '';
     courseData.contentDescription = '';
 
