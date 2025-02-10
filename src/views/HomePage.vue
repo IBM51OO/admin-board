@@ -170,8 +170,8 @@ const deleteGroup = async () => {
     }
 }
 const selectGroupValue = ref('');
-const base = 'http://91.227.40.254:8888';
-const secondBase = 'http://91.227.40.254:8880';
+const base = import.meta.env.VITE_BASE_API;
+const secondBase = import.meta.env.VITE_SECOND_API;
 const schema =  yup.object({
     name: yup.string().required('Name is a required field'),
     content: yup.string().required('Name is a required field'),
