@@ -68,7 +68,7 @@
                         </div>
                         <div class="new-course__group-image" v-if="courseData.groups">
                             <span>Обновить фото группы</span>
-                            <input type="file" id="avatar" name="avatar" accept="image/png, image/jpeg" @change="uploadGroupImage"  />
+                            <input type="file" id="avatar" ref="groupFile" name="avatar" accept="image/png, image/jpeg" @change="uploadGroupImage"  />
                         </div>
                     </div>
                     <div class="new-course__price">
@@ -196,6 +196,7 @@ const uploadImage = async (e, id) => {
 }
 const textContent = ref();
 const editedCourse = ref();
+const groupFile = ref();
 const modal = ref();
 const editCourseId = ref(false);
 fetchCourses();
@@ -226,6 +227,8 @@ function uploadGroupImage(e) {
             'Content-Type': 'multipart/form-data'
         }
     })
+    groupFile.value.type = "text";
+    groupFile.value.type = "file";
     notify({
         type: 'success',
         title: "Фото группы обновлено",
@@ -274,6 +277,7 @@ async function editCourse(id) {
     })
     pages.value = editedCourse.value.pages.length;
     createCoursePopup.value = true;
+    selectGroupValue.value = data.group;
 }
 function addPage() {
     coursesContent.value.push({
