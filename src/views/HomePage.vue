@@ -4,6 +4,14 @@
             <div class="courses__title">
                 курсы
             </div>
+            <div class="courses__filter">
+                <span>Фильтр по группе</span>
+                <VueSelect
+                    v-model="selected"
+                    :is-multi="false"
+                    :options="groupOptionSelect"
+                />
+            </div>
             <div class="courses__list">
                 <div class="course-add" @click="openCreatePopup">
                     <div class="course-add__wrapper">
@@ -12,7 +20,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="course" v-for="course in courses" :key="course.id">
+                <div class="course" v-for="course in filteredCourses" :key="course.id">
                     <div class="course__wrapper">
                         <div class="course__img-wrapper">
                             <div class="course__img">
@@ -123,22 +131,28 @@ import {notify} from "@kyvg/vue3-notification";
 import {openModal} from "jenesius-vue-modal";
 import * as yup from 'yup';
 import Popup from "@/components/Popup.vue";
-import {nextTick, reactive, ref} from "vue";
+import {computed, nextTick, reactive, ref, watch} from "vue";
 import '@vueup/vue-quill/dist/vue-quill.snow.css';
 import { QuillEditor } from '@vueup/vue-quill'
 import DeleteModal from "@/components/DeleteModal.vue";
 import PlusIcon from "@/img/svg/plus.svg?component";
 import DeleteIcon from "@/img/svg/delete.svg?component";
+import VueSelect from "vue3-select-component";
 const createCoursePopup = ref(false);
+const selected = ref();
 const showNewGroupField = ref(false);
 const pages = ref(1);
 const courses = ref();
+const filteredCourses = computed(() => courses.value && selected.value ? courses.value.filter((el) => el.group === selected.value): courses.value)
 const coursesContent = ref([
     {
         title: ' ',
         text: ' ',
     }
 ]);
+watch(selected, (val) => {
+    console.log('fewfw')
+})
 const groupName = ref();
 const groups = ref(null);
 const deleteGroup = async () => {
@@ -197,6 +211,7 @@ const uploadImage = async (e, id) => {
 const textContent = ref();
 const editedCourse = ref();
 const groupFile = ref();
+const groupOptionSelect = computed(() => groups.value && groups.value.map((el) => {return {label: el.name, value: el.id, ...el}}))
 const modal = ref();
 const editCourseId = ref(false);
 fetchCourses();
@@ -378,11 +393,24 @@ function onChangeGroup(value) {
         z-index: 99;
     }
     .courses {
+        &__filter {
+            max-width: 300px;
+            margin-left: auto;
+            padding-right: 20px;
+            span {
+                display: block;
+                margin-bottom: 5px;
+                font-weight: 500;
+                text-align: right;
+            }
+            .control {
+                border: 1px solid #969696;
+            }
+        }
         &__list {
             display: flex;
             flex-wrap: wrap;
             row-gap: 44px;
-            justify-content: space-between;
         }
         &__title {
             font-size: 48px;
