@@ -213,7 +213,7 @@ const editedCourse = ref();
 const groupFile = ref();
 const groupOptionSelect = computed(() => groups.value && groups.value.map((el) => {return {label: el.name, value: el.id, ...el}}))
 const modal = ref();
-const editCourseId = ref(false);
+const editCourseId = ref('');
 fetchCourses();
 fetchGroups();
 async function createNewGroup() {
@@ -355,6 +355,7 @@ async function onSubmit(data) {
     }
 }
 function openCreatePopup() {
+    editCourseId.value = '';
     selectGroupValue.value = '';
     editedCourse.value = null;
     createCoursePopup.value = true;
