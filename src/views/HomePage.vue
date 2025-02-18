@@ -293,7 +293,6 @@ async function editCourse(id) {
     nextTick(() => {
         prevContent.value.setHTML(data.content);
     })
-    console.log(prevContent);
     pages.value = editedCourse.value.pages.length;
     createCoursePopup.value = true;
     selectGroupValue.value = data.group;
@@ -378,7 +377,7 @@ function openCreatePopup() {
     courseData.content = '';
     courseData.priceSecond = '';
     courseData.contentDescription = '';
-
+    prevContent.value.setHTML('');
     fetchGroups();
 }
 async function fetchCourses() {
