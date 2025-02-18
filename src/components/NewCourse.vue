@@ -43,7 +43,9 @@
             </div>
             <div class="new-course__description">
                 <span>Описание</span>
-                <Field name="description" placeholder="Описание" v-model="courseData.description"/>
+                <div>
+                    <QuillEditor v-model:content="courseData.description" class="quill-editor" ref="descrContent"/>
+                </div>
                 <ErrorMessage name="description"/>
             </div>
             <div class="new-course__content-description">

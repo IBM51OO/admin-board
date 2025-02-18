@@ -100,8 +100,9 @@
                     </div>
                     <div class="new-course__content-description">
                         <span>Предварительный контент курса</span>
-                        <Field name="content" placeholder="Предварительный контент курса" v-model="courseData.content"/>
-                        <ErrorMessage name="content"/>
+                        <div>
+                            <QuillEditor v-model:content="courseData.content" class="quill-editor" ref="prevContent"/>
+                        </div>
                     </div>
                     <div class="new-course__content" v-for="(page, index) in pages" :key="index">
                         <h3 v-if="pages > 1">Страница {{index + 1}}</h3>
@@ -174,7 +175,6 @@ const base = import.meta.env.VITE_BASE_API;
 const secondBase = import.meta.env.VITE_SECOND_API;
 const schema =  yup.object({
     name: yup.string().required('Name is a required field'),
-    content: yup.string().required('Name is a required field'),
     groups: yup.string().required('Required field'),
     price: yup.string().required('Price is a required field'),
     priceSecond: yup.string().required('Price is a required field'),
@@ -209,6 +209,7 @@ const uploadImage = async (e, id) => {
     }
 }
 const textContent = ref();
+const prevContent = ref();
 const editedCourse = ref();
 const groupFile = ref();
 const groupOptionSelect = computed(() => groups.value && groups.value.map((el) => {return {label: el.name, value: el.id, ...el}}))
@@ -286,10 +287,13 @@ async function editCourse(id) {
             text: el.text
         })
         nextTick(() => {
-            console.log(textContent.value[index])
             textContent.value[index].setHTML(el.text);
         })
     })
+    nextTick(() => {
+        prevContent.value.setHTML(data.content);
+    })
+    console.log(prevContent);
     pages.value = editedCourse.value.pages.length;
     createCoursePopup.value = true;
     selectGroupValue.value = data.group;
@@ -321,7 +325,7 @@ async function onSubmit(data) {
         const apiUrl = editCourseId.value ? `${base}/fitsphere/products/${editCourseId.value}` : `${base}/fitsphere/products`;
         await axios.post(apiUrl, {
             name: data.name,
-            content: data.content,
+            content: prevContent.value.getHTML(),
             description: data.description,
             period: 0,
             images: courseData.images,
