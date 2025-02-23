@@ -10,5 +10,5 @@ import {Notifications} from "@kyvg/vue3-notification";
     <RouterView/>
 </template>
 
-<style scoped>
+<style>
 </style>

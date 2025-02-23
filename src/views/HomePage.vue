@@ -98,6 +98,21 @@
                         <Field name="description" placeholder="Описание" v-model="courseData.description"/>
                         <ErrorMessage name="description"/>
                     </div>
+                    <div class="new-course__achivement">
+                        <span>Достижения</span>
+                        <Field name="achiv" placeholder="Достижения" v-model="courseData.achiv"/>
+                        <ErrorMessage name="achiv"/>
+                    </div>
+                    <div class="new-course__nutritions">
+                        <span>Питание</span>
+                        <Field name="nutritions" placeholder="Питание" v-model="courseData.nutritions"/>
+                        <ErrorMessage name="nutritions"/>
+                    </div>
+                    <div class="new-course__discount">
+                        <span>Скидка</span>
+                        <Field name="discount" placeholder="Скидка" v-model="courseData.discount"/>
+                        <ErrorMessage name="discount"/>
+                    </div>
                     <div class="new-course__content-description">
                         <span>Предварительный контент курса</span>
                         <div>
@@ -179,6 +194,9 @@ const schema =  yup.object({
     price: yup.string().required('Price is a required field'),
     priceSecond: yup.string().required('Price is a required field'),
     description: yup.string().required('Description is a required field'),
+    achiv: yup.string().required('Description is a required field'),
+    nutritions: yup.string().required('Description is a required field'),
+    discount: yup.string().required('Description is a required field'),
 });
 const courseData = reactive({
     name: '',
@@ -187,6 +205,9 @@ const courseData = reactive({
     price: '',
     priceSecond: '',
     description: '',
+    nutritions: '',
+    achiv: '',
+    discount: '',
     images: [],
 });
 const { setErrors, handleSubmit } = useForm({
@@ -250,7 +271,7 @@ function uploadGroupImage(e) {
         title: "Фото группы обновлено",
     });
 }
- async function openDeleteModal(id) {
+async function openDeleteModal(id) {
     modal.value = await openModal(DeleteModal);
     modal.value.on('delete', async (v) => {
         await deleteCourse(id);
@@ -270,7 +291,7 @@ async function deleteCourse(id) {
     }
 }
 async function editCourse(id) {
-    const {data} = await axios.get(`${base}/fitsphere/products/${id}`);
+    const { data } = await axios.get(`${base}/fitsphere/products/${id}`);
     editCourseId.value = id;
     editedCourse.value = data;
     courseData.description = data.description;
@@ -278,6 +299,9 @@ async function editCourse(id) {
     courseData.groups = data.group;
     courseData.images = data.images;
     courseData.content = data.content;
+    courseData.discount = data.discount;
+    courseData.achiv = data.achievements;
+    courseData.nutritions = data.nutrition;
     courseData.price = data.prices[0]?.amount;
     courseData.priceSecond = data.prices[1]?.amount;
     coursesContent.value = [];
@@ -329,6 +353,9 @@ async function onSubmit(data) {
             period: 0,
             images: courseData.images,
             group: data.groups,
+            discount: data.discount,
+            achievements: data.achiv,
+            nutrition: data.nutritions,
             table_of_contents: 'Test',
             pages: coursesContent.value.map((el, index) => {
                 return {
@@ -374,6 +401,9 @@ function openCreatePopup() {
     courseData.groups = '';
     courseData.name = '';
     courseData.description = '';
+    courseData.achiv = '';
+    courseData.nutritions = '';
+    courseData.discount = '';
     courseData.content = '';
     courseData.priceSecond = '';
     courseData.contentDescription = '';
@@ -521,6 +551,29 @@ function onChangeGroup(value) {
         margin: 0 auto;
         &__content-description {
             margin-top: 20px;
+            input {
+                margin-left: 10px;
+            }
+        }
+        &__achivement {
+            margin-top: 10px;
+            input {
+                margin-left: 10px;
+            }
+        }
+        &__discount {
+            margin-top: 10px;
+            input {
+                margin-left: 10px;
+            }
+        }
+        &__nutritions {
+            margin-top: 10px;
+            input {
+                margin-left: 10px;
+            }
+        }
+        &__discount {
             input {
                 margin-left: 10px;
             }
