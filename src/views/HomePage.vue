@@ -108,11 +108,6 @@
                         <Field name="nutritions" placeholder="Питание" v-model="courseData.nutritions"/>
                         <ErrorMessage name="nutritions"/>
                     </div>
-                    <div class="new-course__discount">
-                        <span>Скидка</span>
-                        <Field name="discount" placeholder="Скидка" v-model="courseData.discount"/>
-                        <ErrorMessage name="discount"/>
-                    </div>
                     <div class="new-course__content-description">
                         <span>Предварительный контент курса</span>
                         <div>
@@ -196,7 +191,6 @@ const schema =  yup.object({
     description: yup.string().required('Description is a required field'),
     achiv: yup.string().required('Description is a required field'),
     nutritions: yup.string().required('Description is a required field'),
-    discount: yup.string().required('Description is a required field'),
 });
 const courseData = reactive({
     name: '',
@@ -207,7 +201,6 @@ const courseData = reactive({
     description: '',
     nutritions: '',
     achiv: '',
-    discount: '',
     images: [],
 });
 const { setErrors, handleSubmit } = useForm({
@@ -299,7 +292,6 @@ async function editCourse(id) {
     courseData.groups = data.group;
     courseData.images = data.images;
     courseData.content = data.content;
-    courseData.discount = data.discount;
     courseData.achiv = data.achievements;
     courseData.nutritions = data.nutrition;
     courseData.price = data.prices[0]?.amount;
@@ -353,7 +345,6 @@ async function onSubmit(data) {
             period: 0,
             images: courseData.images,
             group: data.groups,
-            discount: data.discount,
             achievements: data.achiv,
             nutrition: data.nutritions,
             table_of_contents: 'Test',
@@ -403,7 +394,6 @@ function openCreatePopup() {
     courseData.description = '';
     courseData.achiv = '';
     courseData.nutritions = '';
-    courseData.discount = '';
     courseData.content = '';
     courseData.priceSecond = '';
     courseData.contentDescription = '';
