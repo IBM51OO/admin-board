@@ -67,12 +67,16 @@
                                 <option :value="item.id" v-for="item in groups" :key="item.id">{{item.name}}</option>
                                 <option value="newGroup">Создать группу</option>
                             </Field>
-                            <div class="new-course__delete-group"  v-if="courseData.groups && courseData.groups !== 'newGroup'" @click="deleteGroup">
+                            <div class="new-course__delete-group" v-if="courseData.groups && courseData.groups !== 'newGroup'" @click="deleteGroup">
                                 Удалить группу
                             </div>
                             <ErrorMessage name="groups"/>
                             <Field name="groupField" v-if="courseData.groups === 'newGroup'" placeholder="Название группы" v-model="groupName" />
-                            <div @click="createNewGroup"><img src="../img/check.png" alt="" v-if="groupName"></div>
+                            <div @click="createNewGroup"><img src="../img/check.png" alt="" v-if="groupName && courseData.groups === 'newGroup'"></div>
+                        </div>
+                        <div class="new-course__group-desk">
+                            <Field name="groupDesk" v-if="courseData.groups !== 'newGroup' && courseData.groups" placeholder="Описание группы" v-model="groupDesk" />
+                            <div @click="editGroup(selectGroupValue)"><img src="../img/check.png" alt="" v-if="courseData.groups !== 'newGroup' && groupDesk"></div>
                         </div>
                         <div class="new-course__group-image" v-if="courseData.groups">
                             <span>Обновить фото группы</span>
@@ -165,7 +169,23 @@ watch(selected, (val) => {
     console.log('fewfw')
 })
 const groupName = ref();
+const groupDesk = ref();
 const groups = ref(null);
+async function editGroup(groupId) {
+    try {
+        const { data } = await axios.post(`${base}/fitsphere/groups/${groupId}`, {
+            name: groupName.value,
+            description: groupDesk.value,
+        });
+        await fetchGroups();
+        notify({
+            type: 'success',
+            title: "Группа обновлена",
+        });
+    } catch (e) {
+        console.log(e)
+    }
+}
 const deleteGroup = async () => {
     try {
         await axios.delete(`${base}/fitsphere/groups/${courseData.groups}`)
@@ -234,9 +254,11 @@ fetchGroups();
 async function createNewGroup() {
     try {
         const { data } = await axios.post(`${base}/fitsphere/groups`, {
-            name: groupName.value
+            name: groupName.value,
+            description: groupDesk.value,
         });
         groupName.value = null;
+        groupDesk.value = null;
         showNewGroupField.value = false;
         selectGroupValue.value = data.id;
         await fetchGroups();
@@ -410,6 +432,9 @@ async function fetchCourses() {
 }
 function onChangeGroup(value) {
     selectGroupValue.value = value.target.value;
+    const group = groups.value.find((el) => el.id === value.target.value);
+    groupName.value = group.name;
+    groupDesk.value = group.description;
     showNewGroupField.value = value.target.value === 'newGroup';
 }
 </script>
@@ -596,6 +621,17 @@ function onChangeGroup(value) {
             input {
                 margin-left: 10px;
             }
+            img {
+                height: 15px;
+                width: 15px;
+                cursor: pointer;
+                margin-left: 10px;
+            }
+        }
+        &__group-desk {
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
             img {
                 height: 15px;
                 width: 15px;
